@@ -46,8 +46,10 @@ src/
 |   |-- users/
 |   |   |-- dtos/
 |   |   |-- entities/
+|   |   |-- users.controller.spec.ts
 |   |   |-- users.controller.ts
 |   |   |-- users.module.ts
+|   |   |-- users.service.spec.ts
 |   |   |-- users.service.ts
 |-- core/
 |   |-- exceptions/
