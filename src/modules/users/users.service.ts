@@ -33,8 +33,13 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<User[]> {
+    try {
+      // TODO: filtrar, paginar, por usuario
+      return this.userRepository.find();
+    } catch (error) {
+      this.handleDataBaseErrors(error);
+    }
   }
 
   findOne(id: number) {
