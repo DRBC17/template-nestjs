@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EnvConfigurations } from 'config/env.config';
 import { joiValidationSchema } from 'config/joi.validation';
 
+import { UsersModule } from './modules/users/users.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,7 +30,7 @@ import { joiValidationSchema } from 'config/joi.validation';
       inject: [ConfigService],
     }),
 
-    // UsersModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
