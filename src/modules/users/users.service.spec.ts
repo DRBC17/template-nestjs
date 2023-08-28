@@ -9,7 +9,7 @@ describe('UsersService', () => {
   let userRepository: Repository<User>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
         {
@@ -19,8 +19,8 @@ describe('UsersService', () => {
       ],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    usersService = moduleRef.get<UsersService>(UsersService);
+    userRepository = moduleRef.get<Repository<User>>(getRepositoryToken(User));
   });
 
   it('should be defined', () => {

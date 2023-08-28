@@ -10,7 +10,7 @@ describe('UsersController', () => {
   // let usersService: UsersService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
         UsersService,
@@ -21,7 +21,7 @@ describe('UsersController', () => {
       ],
     }).compile();
 
-    usersController = module.get<UsersController>(UsersController);
+    usersController = moduleRef.get<UsersController>(UsersController);
     // usersService = module.get<UsersService>(UsersService);
   });
 
