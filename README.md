@@ -6,14 +6,16 @@
 
 Template CMS Nestjs.
 
-## Env templates
+## Environments
 
 ```bash
-# Api
-./apps/api/.env.template
+# Environment template
+.env.template
 ```
 
 ## Installation
+
+Use the package manager [yarn](https://yarnpkg.com/) to install dependencies.
 
 ```bash
 yarn install
@@ -22,14 +24,17 @@ yarn install
 ## Running the app
 
 ```bash
-# Development
-yarn start:dev
+# development
+yarn run start
+
+# watch mode
+yarn run start:dev
+
+# production mode
+yarn run start:prod
 
 # Production build
 yarn build
-
-# Start project in production
-yarn start
 
 # Start PostgreSQL and pgAdmin
 docker-compose up -d
@@ -38,31 +43,64 @@ docker-compose up -d
 docker-compose down -d
 ```
 
+## Test
+
+```bash
+# unit tests
+$ yarn run test
+
+# e2e tests
+$ yarn run test:e2e
+
+# test coverage
+$ yarn run test:cov
+```
+
 ## Project structure
 
 ```Text
-src/
-|-- modules/
-|   |-- users/
-|   |   |-- dtos/
-|   |   |-- entities/
-|   |   |-- users.controller.spec.ts
-|   |   |-- users.controller.ts
-|   |   |-- users.module.ts
-|   |   |-- users.service.spec.ts
-|   |   |-- users.service.ts
-|-- core/
-|   |-- exceptions/
-|   |-- filters/
-|   |-- guards/
-|   |-- interceptors/
-|   |-- helpers/
-|   |-- validators/
-|-- config/
-|   |-- env.config
-|   |-- joi.validation.ts
-|-- main.ts
-|-- app.module.ts
+template-cms-nestjs/
+|- .husky
+|- src/
+|  |- config/
+|  |  |- env.config
+|  |  └- joi.validation.ts
+|  |- core/
+|  |  |- exceptions/
+|  |  |- filters/
+|  |  |- guards/
+|  |  |- interceptors/
+|  |  |- helpers/
+|  |  └─ validators/
+|  |- modules/
+|  |  └─ users/
+|  |     |- dtos/
+|  |     |- entities/
+|  |     |- users.controller.spec.ts
+|  |     |- users.controller.ts
+|  |     |- users.module.ts
+|  |     |- users.service.spec.ts
+|  |     └─ users.service.ts
+|  |─ app.module.ts
+|  └─ main.ts
+|- test/
+|  |- modules
+|  |  └- users.e2e-spec.ts
+|  |─ app.e2e-spec.ts
+|  └─ jest-e2e.json
+|- .env
+|- .env.template
+|- .eslintrc.js
+|- .gitignore
+|- .lintstagedrc
+|- .prettierrc
+|- docker-compose.yml
+|- nest-cli.json
+|- package.json
+|- README.md
+|- tsconfig.build.json
+|- tsconfig.json
+└─ yarn.lock
 ```
 
 ## Stay in touch
