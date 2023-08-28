@@ -60,7 +60,9 @@ $ yarn run test:cov
 
 ```Text
 template-cms-nestjs/
-|- .husky
+|- .husky/
+|  |─ pre-commit
+|  └─ pre-push
 |- src/
 |  |- config/
 |  |  |- env.config
