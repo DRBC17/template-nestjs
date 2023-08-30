@@ -11,10 +11,11 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { ErrorTypeORM } from 'src/core/interfaces/error-typeorm.interface';
 
 @Injectable()
 export class UsersService {
-  private logger: Logger = new Logger('UsersService');
+  private readonly logger: Logger = new Logger('UsersService');
 
   constructor(
     @InjectRepository(User)
@@ -55,12 +56,13 @@ export class UsersService {
     return `This action removes a #${id} user`;
   }
 
-  private handleDataBaseErrors(error: any): never {
+  private handleDataBaseErrors(error: ErrorTypeORM): never {
+    this.logger.error(error);
+
     if (error.code === '23505') throw new BadRequestException(error.detail);
 
     if (error.code === 'error-404') throw new NotFoundException(error.detail);
 
-    this.logger.error(error);
     throw new InternalServerErrorException('Internal Server Error');
   }
 }
