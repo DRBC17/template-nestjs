@@ -33,6 +33,9 @@ describe('UsersService', () => {
         fullName: 'fullName',
         username: 'username',
         password: 'password',
+        HashPasswordInsert: function (): void {
+          this.password = 'hash-password';
+        },
       };
 
       const createdUser: User = {
@@ -42,6 +45,9 @@ describe('UsersService', () => {
         id: 'id',
         roles: ['user'],
         isActive: true,
+        HashPasswordInsert: function (): void {
+          this.password = 'hash-password';
+        },
       };
 
       jest.spyOn(userRepository, 'create').mockReturnValue(userData);
@@ -51,7 +57,7 @@ describe('UsersService', () => {
 
   describe('findAll', () => {
     it('should return an array of users', async () => {
-      const users = [
+      const users: User[] = [
         {
           fullName: 'fullName',
           username: 'username',
@@ -59,11 +65,14 @@ describe('UsersService', () => {
           id: 'id',
           roles: ['user'],
           isActive: true,
+          HashPasswordInsert: function (): void {
+            this.password = 'hash-password';
+          },
         },
       ];
       jest.spyOn(userRepository, 'find').mockResolvedValue(users);
 
-      expect(await usersService.findAll()).toBe(users);
+      expect(await usersService.findAll({})).toBe(users);
     });
   });
 });

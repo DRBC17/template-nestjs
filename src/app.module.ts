@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EnvConfigurations, joiValidationSchema } from './config';
 
 import { UsersModule } from './modules/users/users.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -30,6 +31,8 @@ import { UsersModule } from './modules/users/users.module';
     }),
 
     UsersModule,
+
+    CommonModule,
   ],
   controllers: [],
   providers: [],
