@@ -14,6 +14,8 @@ import { ErrorTypeORM } from 'src/common/interfaces/error-typeorm.interface';
 import { PaginationDto } from '../../common/dtos/pagination.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { validate as isUUID } from 'uuid';
+import { UserResponse } from './interfaces/user-response.interface';
 
 @Injectable()
 export class UsersService {
@@ -26,10 +28,10 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const newUser = this.userRepository.create(createUserDto);
-      const user = await this.userRepository.save(newUser);
-      delete user.password;
-      return user;
+      const user = this.userRepository.create(createUserDto);
+      const newUser = await this.userRepository.save(user);
+      delete newUser.password;
+      return newUser;
     } catch (error) {
       this.handleDataBaseErrors(error);
     }
@@ -49,32 +51,47 @@ export class UsersService {
     }
   }
 
-  async findOneById(id: string): Promise<User> {
-    try {
-      const user = await this.userRepository.findOneBy({ id });
-      delete user.password;
-      if (!user) throw new NotFoundException(`User with id ${id} not found`);
-      return user;
-    } catch (error) {
-      this.handleDataBaseErrors(error);
+  async findOne(term: string): Promise<UserResponse> {
+    let user: User;
+    if (isUUID(term)) {
+      user = await this.userRepository.findOneBy({ id: term });
+    } else {
+      const queryBuilder = this.userRepository.createQueryBuilder();
+      user = await queryBuilder
+        .where(`"username" =:username or LOWER("fullName") =:fullName`, {
+          username: term.toLowerCase(),
+          fullName: term.toLowerCase(),
+        })
+        .getOne();
     }
+
+    if (!user) throw new NotFoundException(`User with term ${term} not found`);
+
+    delete user.password;
+    return {
+      message: 'Successfully created user',
+    };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} ${updateUserDto} user`;
-  }
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponse> {
+    delete updateUserDto.password;
+    delete updateUserDto.username;
+    const user = await this.userRepository.preload({
+      id: id,
+      ...updateUserDto,
+    });
 
-  async changeState(id: string) {
+    if (!user) throw new NotFoundException(`User with id: ${id} not found`);
+
     try {
-      const userFound = await this.findOneById(id);
+      await this.userRepository.save(user);
 
-      const user = await this.userRepository.update(id, {
-        isActive: !userFound.isActive,
-      });
+      delete user.password;
       return {
-        message: `User with id ${id} is now ${
-          userFound.isActive ? 'inactive' : 'active'
-        }`,
+        message: `User with username: ${user.username} is updated`,
         user,
       };
     } catch (error) {
@@ -82,10 +99,50 @@ export class UsersService {
     }
   }
 
+  async updatePassword(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponse> {
+    // TODO: required admin password
+    const user = await this.userRepository.preload({
+      id: id,
+      password: updateUserDto.password,
+    });
+
+    if (!user) throw new NotFoundException(`User with id: ${id} not found`);
+
+    try {
+      await this.userRepository.save(user);
+
+      delete user.password;
+      return {
+        message: `${user.username} password updated`,
+      };
+    } catch (error) {
+      this.handleDataBaseErrors(error);
+    }
+  }
+
+  async updateState(id: string, isActive: boolean): Promise<UserResponse> {
+    const user = await this.userRepository.preload({
+      id: id,
+      isActive,
+    });
+
+    if (!user) throw new NotFoundException(`User with id: ${id} not found`);
+
+    await this.userRepository.save(user);
+    return {
+      message: `User with id: ${id} is now ${
+        user.isActive ? 'active' : 'inactive'
+      }`,
+    };
+  }
+
   private handleDataBaseErrors(error: ErrorTypeORM): never {
     if (error.code === '23505') throw new BadRequestException(error.detail);
 
-    if (error.code === 'error-404') throw new NotFoundException(error.detail);
+    // if (error.code === 'error-404') throw new NotFoundException(error.detail);
     this.logger.error(error);
 
     throw new InternalServerErrorException('Internal Server Error');

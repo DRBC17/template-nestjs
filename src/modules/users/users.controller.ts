@@ -27,18 +27,29 @@ export class UsersController {
     return this.usersService.findAll(paginationDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.findOneById(id);
+  @Get(':term')
+  findOne(@Param('term') term: string) {
+    return this.usersService.findOne(term);
   }
 
-  @Patch(':id')
+  @Patch('/update/:id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
-  @Patch('/change-state/:id')
-  changeState(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.changeState(id);
+  @Patch('/update-password/:id')
+  updatePassword(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.updatePassword(id, updateUserDto);
+  }
+
+  @Patch('/update-state/:id')
+  updateState(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('isActive') isActive: boolean,
+  ) {
+    return this.usersService.updateState(id, isActive);
   }
 }

@@ -1,4 +1,10 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 @Entity({ name: 'users' })
@@ -9,7 +15,14 @@ export class User {
   @Column('text')
   fullName: string;
 
-  @Column({ type: 'text', unique: true })
+  @Column({
+    type: 'text',
+    unique: true,
+    transformer: {
+      to: (value: string) => value.toLowerCase(),
+      from: (value: string) => value,
+    },
+  })
   username: string;
 
   @Column('text')
@@ -26,10 +39,14 @@ export class User {
   isActive?: boolean;
 
   @BeforeInsert()
-  HashPasswordInsert() {
+  hashPasswordInsert() {
     this.password = bcrypt.hashSync(this.password, 10);
   }
 
-  // @BeforeUpdate()
+  @BeforeUpdate()
+  hashPasswordUpdate() {
+    this.password = bcrypt.hashSync(this.password, 10);
+  }
+
   //TODO: Relaciones
 }
