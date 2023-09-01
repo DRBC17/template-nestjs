@@ -8,6 +8,33 @@ describe('UsersService', () => {
   let usersService: UsersService;
   let userRepository: Repository<User>;
 
+  const userData: User = {
+    fullName: 'fullName',
+    username: 'username',
+    password: 'password',
+    hashPasswordInsert: function (): void {
+      this.password = 'hashed_password';
+    },
+    hashPasswordUpdate: function (): void {
+      this.password = 'hashed_password';
+    },
+  };
+
+  const createdUser: User = {
+    fullName: 'fullName',
+    username: 'username',
+    password: 'password',
+    id: 'id',
+    roles: ['user'],
+    isActive: true,
+    hashPasswordInsert: function (): void {
+      this.password = 'hashed_password';
+    },
+    hashPasswordUpdate: function (): void {
+      this.password = 'hashed_password';
+    },
+  };
+
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
@@ -29,21 +56,6 @@ describe('UsersService', () => {
 
   describe('create', () => {
     it('should create a user', async () => {
-      const userData: User = {
-        fullName: 'fullName',
-        username: 'username',
-        password: 'password',
-      };
-
-      const createdUser: User = {
-        fullName: 'fullName',
-        username: 'username',
-        password: 'password',
-        id: 'id',
-        roles: ['user'],
-        isActive: true,
-      };
-
       jest.spyOn(userRepository, 'create').mockReturnValue(userData);
       jest.spyOn(userRepository, 'save').mockResolvedValue(createdUser);
     });
@@ -51,19 +63,10 @@ describe('UsersService', () => {
 
   describe('findAll', () => {
     it('should return an array of users', async () => {
-      const users = [
-        {
-          fullName: 'fullName',
-          username: 'username',
-          password: 'password',
-          id: 'id',
-          roles: ['user'],
-          isActive: true,
-        },
-      ];
+      const users: User[] = [userData];
       jest.spyOn(userRepository, 'find').mockResolvedValue(users);
 
-      expect(await usersService.findAll()).toBe(users);
+      expect(await usersService.findAll({})).toBe(users);
     });
   });
 });

@@ -67,7 +67,7 @@ template-cms-nestjs/
 |  |- config/
 |  |  |- env.config
 |  |  └- joi.validation.ts
-|  |- core/
+|  |- common/
 |  |  |- exceptions/
 |  |  |- filters/
 |  |  |- guards/

@@ -1,19 +1,24 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { TestingModule, Test } from '@nestjs/testing';
 import { UsersModule } from '../../src/modules/users/users.module';
 import { User } from '../../src/modules/users/entities/user.entity';
+import { Repository } from 'typeorm';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
-  const globalPrefix = 'http://localhost:3000/api';
+  let repository: Repository<User>;
   const user: User = {
-    fullName: 'fullName',
-    username: 'username',
-    password: 'password',
-    roles: ['user'],
-    isActive: true,
+    fullName: 'e2e_fullName',
+    username: 'e2e_username',
+    password: 'e2e_password',
+    hashPasswordInsert: function (): void {
+      this.password = 'hashed_password';
+    },
+    hashPasswordUpdate: function (): void {
+      this.password = 'hashed_password';
+    },
   };
 
   beforeAll(async () => {
@@ -25,21 +30,27 @@ describe('UsersController (e2e)', () => {
           port: 5432,
           username: 'postgres',
           password: 'postgres1234',
-          database: 'template_cms_db',
+          database: 'template_cms_db_test_e2e',
           entities: [User],
           synchronize: true,
         }),
         UsersModule,
       ],
-    }).compile();
+    })
+      // .setLogger(new Logger())
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
+    repository = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
+
+    repository.clear();
   });
 
   describe('POST /users/create', () => {
     test('should create a user', async () => {
-      const response = await request(globalPrefix)
+      const response = await request(app.getHttpServer())
         .post('/users/create')
         .send(user)
         .set('Accept', 'application/json');
@@ -49,18 +60,27 @@ describe('UsersController (e2e)', () => {
       );
       expect(response.status).toBe(201);
     });
-    // test('should return an error if the user already exists', async () => {
-    //   const response = await request(globalPrefix)
-    //     .post('/users/create')
-    //     .send(userMock);
 
-    //   expect(response.status).toBe(400);
-    // });
+    test('should return an error if the user already exists', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/users/create')
+        .send(user)
+        .set('Accept', 'application/json');
+
+      expect(response.headers['content-type']).toEqual(
+        expect.stringContaining('json'),
+      );
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body['message']).toBe(
+        'Key (username)=(e2e_username) already exists.',
+      );
+    });
   });
 
   describe('GET /users', () => {
     test('should return an array of users', async () => {
-      const response = await request(globalPrefix).get('/users');
+      const response = await request(app.getHttpServer()).get('/users');
 
       expect(response.headers['content-type']).toEqual(
         expect.stringContaining('json'),
@@ -71,6 +91,6 @@ describe('UsersController (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app?.close();
+    await app.close();
   });
 });
