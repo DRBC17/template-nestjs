@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import { INestApplication, Logger } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { TestingModule, Test } from '@nestjs/testing';
 import { UsersModule } from '../../src/modules/users/users.module';
@@ -37,7 +37,7 @@ describe('UsersController (e2e)', () => {
         UsersModule,
       ],
     })
-      .setLogger(new Logger())
+      // .setLogger(new Logger())
       .compile();
 
     app = moduleFixture.createNestApplication();
