@@ -34,7 +34,7 @@ describe('UsersService', () => {
         username: 'username',
         password: 'password',
         HashPasswordInsert: function (): void {
-          this.password = 'hash-password';
+          this.password = 'hashed_password';
         },
       };
 
@@ -66,7 +66,7 @@ describe('UsersService', () => {
           roles: ['user'],
           isActive: true,
           HashPasswordInsert: function (): void {
-            this.password = 'hash-password';
+            this.password = 'hashed_password';
           },
         },
       ];

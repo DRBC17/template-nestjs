@@ -61,8 +61,7 @@ export class UsersService {
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto); //TODO: remove
-    return `This action updates a #${id} user`;
+    return `This action updates a #${id} ${updateUserDto} user`;
   }
 
   async changeState(id: string) {
@@ -84,11 +83,10 @@ export class UsersService {
   }
 
   private handleDataBaseErrors(error: ErrorTypeORM): never {
-    this.logger.error(error);
-
     if (error.code === '23505') throw new BadRequestException(error.detail);
 
     if (error.code === 'error-404') throw new NotFoundException(error.detail);
+    this.logger.error(error);
 
     throw new InternalServerErrorException('Internal Server Error');
   }

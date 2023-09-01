@@ -13,8 +13,9 @@ describe('UsersController (e2e)', () => {
     fullName: 'e2e_fullName',
     username: 'e2e_username',
     password: 'e2e_password',
-    // roles: ['user'],
-    // isActive: true,
+    HashPasswordInsert: function (): void {
+      this.password = 'hashed_password';
+    },
   };
 
   beforeAll(async () => {
@@ -87,6 +88,6 @@ describe('UsersController (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app?.close();
+    await app.close();
   });
 });
