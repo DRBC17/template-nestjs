@@ -15,8 +15,7 @@ export class User {
   @Column('text')
   fullName: string;
 
-  @Column({
-    type: 'text',
+  @Column('text', {
     unique: true,
     transformer: {
       to: (value: string) => value.toLowerCase(),
@@ -28,14 +27,13 @@ export class User {
   @Column('text')
   password: string;
 
-  @Column({
-    type: 'text',
+  @Column('text', {
     array: true,
     default: ['user'], //TODO: Agregar sección para manejar roles
   })
   roles?: string[];
 
-  @Column({ type: 'boolean', default: true })
+  @Column('boolean', { default: true })
   isActive?: boolean;
 
   @BeforeInsert()
