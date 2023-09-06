@@ -10,12 +10,12 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   fullName: string;
 
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   username: string;
 
   @IsString()

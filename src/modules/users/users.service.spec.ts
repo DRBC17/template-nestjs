@@ -12,12 +12,6 @@ describe('UsersService', () => {
     fullName: 'fullName',
     username: 'username',
     password: 'password',
-    hashPasswordInsert: function (): void {
-      this.password = 'hashed_password';
-    },
-    hashPasswordUpdate: function (): void {
-      this.password = 'hashed_password';
-    },
   };
 
   const createdUser: User = {
@@ -27,12 +21,6 @@ describe('UsersService', () => {
     id: 'id',
     roles: ['user'],
     isActive: true,
-    hashPasswordInsert: function (): void {
-      this.password = 'hashed_password';
-    },
-    hashPasswordUpdate: function (): void {
-      this.password = 'hashed_password';
-    },
   };
 
   beforeEach(async () => {

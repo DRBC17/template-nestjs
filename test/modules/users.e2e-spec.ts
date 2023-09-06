@@ -13,12 +13,6 @@ describe('UsersController (e2e)', () => {
     fullName: 'e2e_fullName',
     username: 'e2e_username',
     password: 'e2e_password',
-    hashPasswordInsert: function (): void {
-      this.password = 'hashed_password';
-    },
-    hashPasswordUpdate: function (): void {
-      this.password = 'hashed_password';
-    },
   };
 
   beforeAll(async () => {

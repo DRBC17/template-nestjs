@@ -1,20 +1,20 @@
 import {
-  BadRequestException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { isUUID } from 'class-validator';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
-import { ErrorTypeORM } from 'src/common/interfaces/error-typeorm.interface';
-import { PaginationDto } from '../../common/dtos/pagination.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { validate as isUUID } from 'uuid';
+import { ErrorTypeORM } from '../../common/interfaces/error-typeorm.interface';
+import { PaginationDto } from '../../common/dtos';
+
+import { CreateUserDto, UpdateUserDto, UpdatePasswordDto } from './dto';
+import { User } from './entities/user.entity';
 import { UserResponse } from './interfaces/user-response.interface';
 
 @Injectable()
@@ -28,10 +28,15 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const user = this.userRepository.create(createUserDto);
-      const newUser = await this.userRepository.save(user);
-      delete newUser.password;
-      return newUser;
+      const { password, ...userData } = createUserDto;
+
+      const user = this.userRepository.create({
+        ...userData,
+        password: bcrypt.hashSync(password, 10),
+      });
+      await this.userRepository.save(user);
+      delete user.password;
+      return user;
     } catch (error) {
       this.handleDataBaseErrors(error);
     }
@@ -66,8 +71,6 @@ export class UsersService {
     }
 
     if (!user) throw new NotFoundException(`User with term ${term} not found`);
-
-    delete user.password;
     return {
       message: 'Successfully created user',
     };
@@ -89,7 +92,8 @@ export class UsersService {
     try {
       await this.userRepository.save(user);
 
-      delete user.password;
+      // TODO Pendiente por revisar
+      // delete user.password;
       return {
         message: `User with username: ${user.username} is updated`,
         user,
@@ -101,12 +105,14 @@ export class UsersService {
 
   async updatePassword(
     id: string,
-    updateUserDto: UpdateUserDto,
+    updatePasswordDto: UpdatePasswordDto,
   ): Promise<UserResponse> {
     // TODO: required admin password
+
+    const { password } = updatePasswordDto;
     const user = await this.userRepository.preload({
       id: id,
-      password: updateUserDto.password,
+      password: bcrypt.hashSync(password, 10),
     });
 
     if (!user) throw new NotFoundException(`User with id: ${id} not found`);
@@ -114,7 +120,8 @@ export class UsersService {
     try {
       await this.userRepository.save(user);
 
-      delete user.password;
+      // TODO Pendiente por revisar
+      // delete user.password;
       return {
         message: `${user.username} password updated`,
       };

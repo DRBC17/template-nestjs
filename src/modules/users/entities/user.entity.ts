@@ -1,19 +1,9 @@
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id?: string;
-
-  @Column('text')
-  fullName: string;
 
   @Column('text', {
     unique: true,
@@ -24,8 +14,13 @@ export class User {
   })
   username: string;
 
-  @Column('text')
+  @Column('text', {
+    select: false,
+  })
   password: string;
+
+  @Column('text')
+  fullName: string;
 
   @Column('text', {
     array: true,
@@ -35,16 +30,6 @@ export class User {
 
   @Column('boolean', { default: true })
   isActive?: boolean;
-
-  @BeforeInsert()
-  hashPasswordInsert() {
-    this.password = bcrypt.hashSync(this.password, 10);
-  }
-
-  @BeforeUpdate()
-  hashPasswordUpdate() {
-    this.password = bcrypt.hashSync(this.password, 10);
-  }
 
   //TODO: Relaciones
 }
