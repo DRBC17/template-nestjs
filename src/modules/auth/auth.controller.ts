@@ -14,7 +14,7 @@ export class AuthController {
   }
 
   @Get('/revalidate-token')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   revalidateToken() {
     return this.authService.revalidateToken();
   }
