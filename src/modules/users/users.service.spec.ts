@@ -12,6 +12,12 @@ describe('UsersService', () => {
     fullName: 'fullName',
     username: 'username',
     password: 'password',
+    checkFieldsBeforeInsert() {
+      this.username = this.username.toLowerCase().trim();
+    },
+    checkFieldsBeforeUpdate() {
+      this.checkFieldsBeforeInsert();
+    },
   };
 
   const createdUser: User = {
@@ -21,6 +27,12 @@ describe('UsersService', () => {
     id: 'id',
     roles: ['user'],
     isActive: true,
+    checkFieldsBeforeInsert() {
+      this.username = this.username.toLowerCase().trim();
+    },
+    checkFieldsBeforeUpdate() {
+      this.checkFieldsBeforeInsert();
+    },
   };
 
   beforeEach(async () => {

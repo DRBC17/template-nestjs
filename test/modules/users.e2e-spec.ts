@@ -13,6 +13,12 @@ describe('UsersController (e2e)', () => {
     fullName: 'e2e_fullName',
     username: 'e2e_username',
     password: 'e2e_password',
+    checkFieldsBeforeInsert() {
+      this.username = this.username.toLowerCase().trim();
+    },
+    checkFieldsBeforeUpdate() {
+      this.checkFieldsBeforeInsert();
+    },
   };
 
   beforeAll(async () => {

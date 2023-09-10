@@ -1,9 +1,18 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { LoginUserDto } from './dto/login-user.dto';
+import * as bcrypt from 'bcrypt';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { LoginUserDto } from './dto/login-user.dto';
+
 import { User } from '../users/entities/user.entity';
-import * as bcrypt from 'bcrypt';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { AuthResponse } from './interfaces/auth-response.interface';
 
 @Injectable()
 export class AuthService {
@@ -12,21 +21,38 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginUserDto: LoginUserDto) {
+  async login(loginUserDto: LoginUserDto): Promise<AuthResponse> {
     const { username, password } = loginUserDto;
 
     const user = await this.userRepository.findOne({
       where: { username },
-      select: { username: true, password: true },
+      select: { id: true, username: true, password: true },
     });
 
     if (!user) throw new UnauthorizedException('Credentials are not valid');
 
-    if (bcrypt.compareSync(password, user.password))
+    if (!bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Credentials are not valid');
 
-    return 'This action login user';
+    return {
+      id: user.id,
+      token: this.getJwtToken({ id: user.id }),
+    };
+  }
+
+  async revalidateToken() {
+    throw new Error('Method not implemented');
+  }
+
+  private getJwtToken(payload: JwtPayload): string {
+    return this.jwtService.sign(payload);
+  }
+
+  private handleDataBaseErrors(error: any): never {
+    this.logger.error(error);
+    throw new InternalServerErrorException('Internal Server Error');
   }
 }
