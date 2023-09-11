@@ -1,4 +1,6 @@
+import { User } from 'src/modules/users/entities/user.entity';
+
 export interface AuthResponse {
-  id: string;
+  user: User;
   token: string;
 }

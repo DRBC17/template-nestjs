@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto';
-import { AuthResponse } from './interfaces/auth-response.interface';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthResponse } from './interfaces';
+import { Auth, GetUser } from './decorators';
+import { User } from '../users/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -14,8 +15,8 @@ export class AuthController {
   }
 
   @Get('/revalidate-token')
-  @UseGuards(AuthGuard('jwt'))
-  revalidateToken() {
-    return this.authService.revalidateToken();
+  @Auth()
+  revalidateToken(@GetUser() user: User): Promise<AuthResponse> {
+    return this.authService.revalidateToken(user);
   }
 }

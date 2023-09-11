@@ -11,8 +11,7 @@ import { Repository } from 'typeorm';
 import { LoginUserDto } from './dto/login-user.dto';
 
 import { User } from '../users/entities/user.entity';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { AuthResponse } from './interfaces/auth-response.interface';
+import { AuthResponse, JwtPayload } from './interfaces';
 
 @Injectable()
 export class AuthService {
@@ -37,14 +36,19 @@ export class AuthService {
     if (!bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Credentials are not valid');
 
+    delete user.password;
     return {
-      id: user.id,
+      user,
       token: this.getJwtToken({ id: user.id }),
     };
   }
 
-  async revalidateToken() {
-    throw new Error('Method not implemented');
+  async revalidateToken(user: User): Promise<AuthResponse> {
+    delete user.password;
+    return {
+      user,
+      token: this.getJwtToken({ id: user.id }),
+    };
   }
 
   private getJwtToken(payload: JwtPayload): string {

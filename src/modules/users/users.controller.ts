@@ -13,8 +13,11 @@ import { PaginationDto } from '../../common/dtos';
 
 import { CreateUserDto, UpdateUserDto, UpdatePasswordDto } from './dto';
 import { UsersService } from './users.service';
+import { Auth } from '../auth/decorators';
+import { ValidRoles } from '../auth/interfaces';
 
 @Controller('users')
+@Auth(ValidRoles.superUser, ValidRoles.admin)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

@@ -36,7 +36,9 @@ export class UsersService {
       });
       await this.userRepository.save(user);
       delete user.password;
-      return user;
+      return {
+        message: 'Successfully created user',
+      };
     } catch (error) {
       this.handleDataBaseErrors(error);
     }
@@ -56,7 +58,7 @@ export class UsersService {
     }
   }
 
-  async findOne(term: string): Promise<UserResponse> {
+  async findOne(term: string): Promise<User> {
     let user: User;
     if (isUUID(term)) {
       user = await this.userRepository.findOneBy({ id: term });
@@ -71,9 +73,8 @@ export class UsersService {
     }
 
     if (!user) throw new NotFoundException(`User with term ${term} not found`);
-    return {
-      message: 'Successfully created user',
-    };
+
+    return user;
   }
 
   async update(
