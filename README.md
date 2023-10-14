@@ -4,7 +4,7 @@
 
 ## Description
 
-Template CMS Nestjs.
+Template Nestjs.
 
 ## Environments
 
