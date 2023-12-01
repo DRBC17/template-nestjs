@@ -1,19 +1,23 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  ParseUUIDPipe,
+  Get,
   Query,
+  Param,
+  Patch,
+  ParseUUIDPipe,
 } from '@nestjs/common';
+
+import { PaginationDto } from '../../common/dtos';
+
+import { CreateUserDto, UpdateUserDto, UpdatePasswordDto } from './dto';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginationDto } from '../../common/dtos/pagination.dto';
+import { Auth } from '../auth/decorators';
+import { ValidRoles } from '../auth/interfaces';
 
 @Controller('users')
+@Auth(ValidRoles.superUser, ValidRoles.admin)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -40,9 +44,9 @@ export class UsersController {
   @Patch('/update-password/:id')
   updatePassword(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    return this.usersService.updatePassword(id, updateUserDto);
+    return this.usersService.updatePassword(id, updatePasswordDto);
   }
 
   @Patch('/update-state/:id')

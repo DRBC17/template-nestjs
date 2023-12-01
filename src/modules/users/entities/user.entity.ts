@@ -5,27 +5,24 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id?: string;
 
-  @Column('text')
-  fullName: string;
-
   @Column('text', {
     unique: true,
-    transformer: {
-      to: (value: string) => value.toLowerCase(),
-      from: (value: string) => value,
-    },
   })
   username: string;
 
+  @Column('text', {
+    select: false,
+  })
+  password?: string;
+
   @Column('text')
-  password: string;
+  fullName: string;
 
   @Column('text', {
     array: true,
@@ -37,14 +34,12 @@ export class User {
   isActive?: boolean;
 
   @BeforeInsert()
-  hashPasswordInsert() {
-    this.password = bcrypt.hashSync(this.password, 10);
+  checkFieldsBeforeInsert() {
+    this.username = this.username.toLowerCase().trim();
   }
 
   @BeforeUpdate()
-  hashPasswordUpdate() {
-    this.password = bcrypt.hashSync(this.password, 10);
+  checkFieldsBeforeUpdate() {
+    this.checkFieldsBeforeInsert();
   }
-
-  //TODO: Relaciones
 }

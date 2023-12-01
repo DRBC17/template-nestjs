@@ -12,11 +12,11 @@ describe('UsersService', () => {
     fullName: 'fullName',
     username: 'username',
     password: 'password',
-    hashPasswordInsert: function (): void {
-      this.password = 'hashed_password';
+    checkFieldsBeforeInsert() {
+      this.username = this.username.toLowerCase().trim();
     },
-    hashPasswordUpdate: function (): void {
-      this.password = 'hashed_password';
+    checkFieldsBeforeUpdate() {
+      this.checkFieldsBeforeInsert();
     },
   };
 
@@ -27,11 +27,11 @@ describe('UsersService', () => {
     id: 'id',
     roles: ['user'],
     isActive: true,
-    hashPasswordInsert: function (): void {
-      this.password = 'hashed_password';
+    checkFieldsBeforeInsert() {
+      this.username = this.username.toLowerCase().trim();
     },
-    hashPasswordUpdate: function (): void {
-      this.password = 'hashed_password';
+    checkFieldsBeforeUpdate() {
+      this.checkFieldsBeforeInsert();
     },
   };
 

@@ -13,11 +13,11 @@ describe('UsersController (e2e)', () => {
     fullName: 'e2e_fullName',
     username: 'e2e_username',
     password: 'e2e_password',
-    hashPasswordInsert: function (): void {
-      this.password = 'hashed_password';
+    checkFieldsBeforeInsert() {
+      this.username = this.username.toLowerCase().trim();
     },
-    hashPasswordUpdate: function (): void {
-      this.password = 'hashed_password';
+    checkFieldsBeforeUpdate() {
+      this.checkFieldsBeforeInsert();
     },
   };
 
